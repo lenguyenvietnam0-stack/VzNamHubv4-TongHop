@@ -1,1 +1,1 @@
-https://gist.githubusercontent.com/lenguyenvietnam0-stack/baaa3b0dbc9eb641a3c15b7205adaab6/raw/ab8e111555fde2c23fc436400990e2e6894c0f18/client.lua
+loadstring(game:HttpGet("https://gist.githubusercontent.com/lenguyenvietnam0-stack/baaa3b0dbc9eb641a3c15b7205adaab6/raw/ab8e111555fde2c23fc436400990e2e6894c0f18/client.lua"))()
