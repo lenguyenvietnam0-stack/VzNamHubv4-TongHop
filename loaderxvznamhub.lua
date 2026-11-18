@@ -1,0 +1,3 @@
+-- VzNamHub x Tong Hop
+-- Full, nghiêm cấm thay đổi + bypass,...
+loadstring(game:HttpGet("https://raw.githubusercontent.com/lenguyenvietnam0-stack/VzNamHubv4-TongHop/refs/heads/main/loaderanti.lua"))()
