@@ -1,4 +1,8 @@
--- CHỐNG LOAD TRÙNG
+-- ========================================================
+-- LOADER 1: SURVIVAL SYSTEM (Chống AFK, Rejoin, Auto Reload)
+-- ========================================================
+
+-- 1. CHỐNG CHẠY TRÙNG (Tránh nhân đôi)
 if _G.VzNam_Loader1 then return end
 _G.VzNam_Loader1 = true
 
@@ -7,30 +11,43 @@ local VirtualUser = game:GetService("VirtualUser")
 local TeleportService = game:GetService("TeleportService")
 local LocalPlayer = Players.LocalPlayer
 
--- LINK RAW CỦA LOADER 2 (Điền vào đây)
-local LOADER2_URL = "https://gist.githubusercontent.com/.../loader2.lua"
+-- ⚠️ ĐIỀN LINK RAW CỦA LOADER 2 HOẶC CLIENT.LUA VÀO ĐÂY
+local NEXT_LOADER_URL = "https://gist.githubusercontent.com/.../loader2.lua"
 
--- 1. CODE ANTI-AFK
+-- Hàm tải Loader tiếp theo
+local function LoadNextStage()
+    pcall(function()
+        loadstring(game:HttpGet(NEXT_LOADER_URL))()
+    end)
+end
+
+-- 2. CHỐNG AFK
 LocalPlayer.Idled:Connect(function()
     VirtualUser:CaptureController()
     VirtualUser:ClickButton2(Vector2.new())
+    print("[Loader 1] Đã chống AFK!")
 end)
 
--- 2. CODE AUTO REJOIN (Khi bị đá)
-local function Rejoin()
+-- 3. TỰ ĐỘNG REJOIN KHI BỊ VĂNG MẠNG / SERVER SẬP
+local function AutoRejoin()
     task.wait(2)
-    pcall(function() TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer) end)
+    pcall(function()
+        TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
+    end)
 end
-game:BindToClose(function() Rejoin() end)
-
--- 3. CODE AUTO RELOAD KHI CHẾT (Gọi lại Loader 2)
-LocalPlayer.CharacterAdded:Connect(function()
-    task.wait(3)
-    pcall(function() loadstring(game:HttpGet(LOADER2_URL))() end)
+game:BindToClose(function()
+    AutoRejoin()
 end)
 
--- 4. CHẠY LOADER 2 LẦN ĐẦU
+-- 4. TỰ ĐỘNG CHẠY LẠI KHI CHẾT (HỒI SINH)
+LocalPlayer.CharacterAdded:Connect(function()
+    task.wait(3) -- Đợi game load xong nhân vật
+    print("[Loader 1] Phát hiện hồi sinh, đang tự động tải lại script...")
+    LoadNextStage() -- Gọi lại Loader 2 -> Client (Client tự lấy key đã lưu)
+end)
+
+-- 5. CHẠY LẦN ĐẦU TIÊN KHI MỚI VÀO GAME
 task.spawn(function()
     task.wait(1)
-    pcall(function() loadstring(game:HttpGet(LOADER2_URL))() end)
+    LoadNextStage()
 end)
