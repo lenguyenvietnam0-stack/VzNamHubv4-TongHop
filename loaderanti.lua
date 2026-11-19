@@ -10,7 +10,7 @@ local TeleportService = game:GetService("TeleportService")
 local LocalPlayer = Players.LocalPlayer
 
 -- ⚠️ BẮT BUỘC: DÁN LINK RAW CỦA FILE LOADER 1 (HOẶC CLIENT) VÀO ĐÂY
-local NEXT_LOADER_URL = "DAN_LINK_RAW_LOADER_1_CUA_MAY_VAO_DAY"
+local NEXT_LOADER_URL = "https://raw.githubusercontent.com/lenguyenvietnam0-stack/VzNamHubv4-TongHop/refs/heads/main/vznamhub.lua"
 
 local function LoadNext()
     print("[LoaderAnti] Đang tải file tiếp theo...")
