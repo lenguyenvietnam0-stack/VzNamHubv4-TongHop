@@ -1,53 +1,61 @@
 -- ========================================================
--- LOADER 1: SURVIVAL SYSTEM (Chống AFK, Rejoin, Auto Reload)
+-- LOADER ANTI (BẢN FIX LỖI)
 -- ========================================================
-
--- 1. CHỐNG CHẠY TRÙNG (Tránh nhân đôi)
-if _G.VzNam_Loader1 then return end
-_G.VzNam_Loader1 = true
+if _G.VzNam_AntiLoaded then return end
+_G.VzNam_AntiLoaded = true
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
 local TeleportService = game:GetService("TeleportService")
 local LocalPlayer = Players.LocalPlayer
 
--- ⚠️ ĐIỀN LINK RAW CỦA LOADER 2 HOẶC CLIENT.LUA VÀO ĐÂY
-local NEXT_LOADER_URL = "https://raw.githubusercontent.com/lenguyenvietnam0-stack/VzNamHubv4-TongHop/refs/heads/main/vznamhub.lua"
+-- ⚠️ BẮT BUỘC: DÁN LINK RAW CỦA FILE LOADER 1 (HOẶC CLIENT) VÀO ĐÂY
+local NEXT_LOADER_URL = "DAN_LINK_RAW_LOADER_1_CUA_MAY_VAO_DAY"
 
--- Hàm tải Loader tiếp theo
-local function LoadNextStage()
-    pcall(function()
-        loadstring(game:HttpGet(NEXT_LOADER_URL))()
+local function LoadNext()
+    print("[LoaderAnti] Đang tải file tiếp theo...")
+    local success, err = pcall(function()
+        local code = game:HttpGet(NEXT_LOADER_URL)
+        -- Thử dùng load nếu loadstring bị chặn
+        local func = loadstring or load
+        func(code)()
     end)
+
+    if not success then
+        warn("[LoaderAnti] LỖI TẢI SCRIPT: " .. tostring(err))
+        -- In thông báo lên màn hình game để mày biết
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "Lỗi Loader",
+            Text = tostring(err),
+            Duration = 10
+        })
+    else
+        print("[LoaderAnti] Tải file tiếp theo THÀNH CÔNG!")
+    end
 end
 
--- 2. CHỐNG AFK
+-- 1. CHỐNG AFK
 LocalPlayer.Idled:Connect(function()
     VirtualUser:CaptureController()
     VirtualUser:ClickButton2(Vector2.new())
-    print("[Loader 1] Đã chống AFK!")
 end)
 
--- 3. TỰ ĐỘNG REJOIN KHI BỊ VĂNG MẠNG / SERVER SẬP
-local function AutoRejoin()
-    task.wait(2)
-    pcall(function()
+-- 2. TỰ ĐỘNG REJOIN (Bọc pcall để không làm hỏng script)
+pcall(function()
+    game:BindToClose(function()
+        task.wait(2)
         TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
     end)
-end
-game:BindToClose(function()
-    AutoRejoin()
 end)
 
--- 4. TỰ ĐỘNG CHẠY LẠI KHI CHẾT (HỒI SINH)
+-- 3. TỰ ĐỘNG TẢI LẠI KHI CHẾT
 LocalPlayer.CharacterAdded:Connect(function()
-    task.wait(3) -- Đợi game load xong nhân vật
-    print("[Loader 1] Phát hiện hồi sinh, đang tự động tải lại script...")
-    LoadNextStage() -- Gọi lại Loader 2 -> Client (Client tự lấy key đã lưu)
+    task.wait(3)
+    LoadNext()
 end)
 
--- 5. CHẠY LẦN ĐẦU TIÊN KHI MỚI VÀO GAME
+-- 4. CHẠY LẦN ĐẦU TIÊN
 task.spawn(function()
     task.wait(1)
-    LoadNextStage()
+    LoadNext()
 end)
